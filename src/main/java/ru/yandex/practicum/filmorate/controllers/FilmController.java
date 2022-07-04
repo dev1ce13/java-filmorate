@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exeptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import javax.validation.Valid;
@@ -29,7 +30,7 @@ public class FilmController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> addFilm(@Valid @RequestBody Film film) {
+    public ResponseEntity<Film> addFilm(@Valid @RequestBody Film film) {
         log.info("/POST добавление нового фильма");
 
         if (validate(film)) {
@@ -42,7 +43,7 @@ public class FilmController {
         } else {
             log.error("данные не прошли валидацию");
 
-            return new ResponseEntity<>("Некорректные данные", HttpStatus.BAD_REQUEST);
+            throw new ValidationException("Некорректные данные", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -59,18 +60,17 @@ public class FilmController {
             } else {
                 log.info("Фильма с ID " + film.getId() + " не существует");
 
-                return new ResponseEntity<>("Фильма с ID " + film.getId() + " не существует", HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new ValidationException("Фильма с ID " + film.getId() + " не существует", HttpStatus.BAD_REQUEST);
             }
         } else {
             log.error("данные не прошли валидацию");
 
-            return new ResponseEntity<>("Некорректные данные", HttpStatus.BAD_REQUEST);
+            throw new ValidationException("Некорректные данные", HttpStatus.BAD_REQUEST);
         }
     }
 
     private int generateID() {
-        id ++;
-        return id;
+        return ++id;
     }
 
     public boolean validate(Film film) {
