@@ -34,7 +34,7 @@ public class ControllersTest {
                     @Override
                     public void execute() throws Throwable {
                         User user = new User("ggg@mail.ru", "asdf", "name", LocalDate.now().plusDays(1));
-                        User response = userController.createUser(user);
+                        userController.createUser(user);
                     }
                 }
         );
@@ -48,7 +48,7 @@ public class ControllersTest {
                     @Override
                     public void execute() throws Throwable {
                         User user = new User("ggg@mail.ru", "a b", "name", LocalDate.of(2020, 1, 1));
-                        User response = userController.createUser(user);
+                        userController.createUser(user);
                     }
                 }
         );
@@ -75,7 +75,7 @@ public class ControllersTest {
                                         "qqqqqqqqqqwwwwwwwwwwwwwwwwwwww rrrrrrrrrrtttttttttt",
                                 LocalDate.of(2000, 1, 1),
                                 10);
-                        Film response = filmController.addFilm(film);
+                        filmController.addFilm(film);
                     }
                 }
         );
@@ -89,7 +89,7 @@ public class ControllersTest {
                     @Override
                     public void execute() throws Throwable {
                         Film film = new Film("a", "q", LocalDate.of(1895, 12, 27), 10);
-                        Film response = filmController.addFilm(film);
+                        filmController.addFilm(film);
                     }
                 }
         );
@@ -103,7 +103,7 @@ public class ControllersTest {
                     @Override
                     public void execute() throws Throwable {
                         Film film = new Film("a", "q", LocalDate.of(1900, 12, 27), 0);
-                        Film response = filmController.addFilm(film);
+                        filmController.addFilm(film);
                     }
                 }
         );
