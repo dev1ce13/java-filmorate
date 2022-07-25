@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exeptions.NotFoundException;
+import ru.yandex.practicum.filmorate.exeptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storages.UserStorage;
 
@@ -51,6 +52,10 @@ public class UserService {
             log.error("Данных не существует");
             throw new NotFoundException("Пользователя с ID: " + userId + " или пользователя с ID: " + friendId + " не существует");
         }
+        if (userId == friendId) {
+            log.error("Нельзя добавить в друзья самого себя");
+            throw new ValidationException("Нельзя добавить в друзья самого себя");
+        }
         return storage.addFriend(userId, friendId);
     }
 
@@ -58,6 +63,10 @@ public class UserService {
         if (storage.getUser(userId) == null || storage.getUser(friendId) == null) {
             log.error("Данных не существует");
             throw new NotFoundException("Пользователя с ID: " + userId + " или пользователя с ID: " + friendId + " не существует");
+        }
+        if (userId == friendId) {
+            log.error("Нельзя удалить из друзей самого себя");
+            throw new ValidationException("Нельзя удалить из друзей самого себя");
         }
         return storage.deleteFriend(userId, friendId);
     }
@@ -74,6 +83,10 @@ public class UserService {
         if (storage.getUser(userId) == null || storage.getUser(otherId) == null) {
             log.error("Данных не существует");
             throw new NotFoundException("Пользователя с ID: " + userId + " или пользователя с ID: " + otherId + " не существует");
+        }
+        if (userId == otherId) {
+            log.error("Нельзя посмотреть список общих друзей с самим собой");
+            throw new ValidationException("Нельзя посмотреть список общих друзей с самим собой");
         }
         return storage.getCommonFriends(userId, otherId);
     }
