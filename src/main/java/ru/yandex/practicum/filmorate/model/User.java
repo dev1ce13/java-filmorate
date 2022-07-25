@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,6 +20,7 @@ public class User {
     private String name;
     private final LocalDate birthday;
     private Set<Integer> friendsId = new HashSet<>();
+    private HashMap<Integer, Boolean> friends = new HashMap<>();
 
     public User(String email, String login, String name, LocalDate birthday) {
         this.email = email;
@@ -29,9 +31,15 @@ public class User {
 
     public void addFriend(int id) {
         friendsId.add(id);
+        //friends.put(id, false);
     }
 
     public void deleteFriend(int id) {
         friendsId.remove(id);
+        //friends.remove(id);
+    }
+
+    public void setStatusFriendship(int id) {
+        friends.replace(id, true);
     }
 }
