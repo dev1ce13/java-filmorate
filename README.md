@@ -12,6 +12,9 @@ FilmController и UserController для работы с приложением
 NotFoundException и контроллер ErrorHandler, который отвечает
 за обработку статус-кода исключений.
 
+Хранилища реализованы с помощью базы данных H2, в них реализована
+вся CRUD-логика.
+
 ## ER-диаграмма
 
 ![img.png](src/main/resources/static/img.png)
