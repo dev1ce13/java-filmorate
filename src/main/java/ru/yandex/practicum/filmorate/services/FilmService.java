@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exeptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -23,11 +24,12 @@ public class FilmService {
     }
 
     public Film getFilm(int filmId) {
-        if (filmStorage.getFilm(filmId) == null) {
-            log.error("Данных не существует");
+        try {
+            filmStorage.getFilm(filmId);
+            return filmStorage.getFilm(filmId);
+        } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Фильма не существует");
         }
-        return filmStorage.getFilm(filmId);
     }
 
     public Film addFilm(Film film) {
@@ -35,27 +37,33 @@ public class FilmService {
     }
 
     public Film updateFilm(Film film) {
-        if (filmStorage.getFilm(film.getId()) == null) {
+        try {
+            filmStorage.getFilm(film.getId());
+            return filmStorage.updateFilm(film);
+        } catch (EmptyResultDataAccessException e) {
             log.error("Данных не существует");
             throw new NotFoundException("Фильма не существует");
         }
-        return filmStorage.updateFilm(film);
     }
 
     public Film addLike(int filmId, int userId) {
-        if (filmStorage.getFilm(filmId) == null || userStorage.getUser(userId) == null) {
-            log.error("Данных не существует");
-            throw new NotFoundException("Фильма с ID: " + filmId + " или пользователя с ID: " + userId + " не существует");
+        try {
+            filmStorage.getFilm(filmId);
+            userStorage.getUser(userId);
+            return filmStorage.addLike(filmId, userId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("Фильма не существует");
         }
-        return filmStorage.addLike(filmId, userId);
     }
 
     public Film deleteLike(int filmId, int userId) {
-        if (filmStorage.getFilm(filmId) == null || userStorage.getUser(userId) == null) {
-            log.error("Данных не существует");
-            throw new NotFoundException("Фильма с ID: " + filmId + " или пользователя с ID: " + userId + " не существует");
+        try {
+            filmStorage.getFilm(filmId);
+            userStorage.getUser(userId);
+            return filmStorage.deleteLike(filmId, userId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("Фильма не существует");
         }
-        return filmStorage.deleteLike(filmId, userId);
     }
 
     public Collection<Film> getPopularFilms(int count) {
