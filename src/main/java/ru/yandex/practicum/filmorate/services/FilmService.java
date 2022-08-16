@@ -69,4 +69,14 @@ public class FilmService {
     public Collection<Film> getPopularFilms(int count) {
         return filmStorage.getPopularFilms(count);
     }
+
+    public Collection<Film> getCommonFilms(int userId, int friendId) {
+        try {
+            userStorage.getUser(userId);
+            userStorage.getUser(friendId);
+            return filmStorage.getCommonFilms(userId, friendId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("Пользователя с ID: " + userId + " или " + friendId + " не существует");
+        }
+    }
 }

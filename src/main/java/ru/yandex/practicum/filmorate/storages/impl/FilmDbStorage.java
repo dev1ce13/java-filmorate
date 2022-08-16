@@ -130,6 +130,28 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sql, this::makeFilm, count);
     }
 
+    @Override
+    public Collection<Film> getCommonFilms(int userId, int friendId) {
+        String sql = "SELECT F.* " +
+                "FROM FILMS F " +
+                "INNER JOIN FILM_LIKE FL on F.FILM_ID = FL.FILM_ID " +
+                "INNER JOIN ( " +
+                    "SELECT FILM_ID, " +
+                    "COUNT(FILM_ID) COUNT_LIKE " +
+                    "FROM FILM_LIKE " +
+                    "GROUP BY FILM_ID " +
+                ") AS LIKES ON F.FILM_ID = LIKES.FILM_ID " +
+                "WHERE USER_ID = ? " +
+                "AND FL.FILM_ID IN ( " +
+                    "SELECT FILM_ID " +
+                    "FROM FILM_LIKE " +
+                    "WHERE USER_ID = ? " +
+                ") " +
+                "GROUP BY F.FILM_ID " +
+                "ORDER BY LIKES.COUNT_LIKE DESC";
+        return jdbcTemplate.query(sql, this::makeFilm, userId, friendId);
+    }
+
     private Film makeFilm(ResultSet resultSet, int rowNum) throws SQLException {
         return Film.builder()
                 .id(resultSet.getInt("film_id"))

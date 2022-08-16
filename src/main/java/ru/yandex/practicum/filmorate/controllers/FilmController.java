@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exeptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -41,6 +40,15 @@ public class FilmController {
     ) {
         log.info("/GET получение списка популярных фильмов");
         return filmService.getPopularFilms(count);
+    }
+
+    @GetMapping("/common")
+    public Collection<Film> getCommonFilms(
+            @RequestParam(value = "userId") int userId,
+            @RequestParam(value = "friendId") int friendId
+    ) {
+        log.info("/GET вывод списка общих фильмов");
+        return filmService.getCommonFilms(userId, friendId);
     }
 
     @PostMapping
