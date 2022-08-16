@@ -20,5 +20,11 @@ public interface FilmStorage {
 
     Collection<Film> getPopularFilms(int count);
 
+    Collection<Film> getPopularFilmsByGenre(int count, int genreId);
+
+    Collection<Film> getPopularFilmsByYear(int count, int year);
+
+    Collection<Film> getPopularFilms(int count, int genreId, int year);
+
     Collection<Film> getCommonFilms(int userId, int friendId);
 }

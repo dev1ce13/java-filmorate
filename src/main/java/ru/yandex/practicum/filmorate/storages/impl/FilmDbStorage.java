@@ -131,6 +131,51 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public Collection<Film> getPopularFilms(int count, int genreId, int year) {
+        String sql = "SELECT F.* " +
+                "FROM FILMS F " +
+                "LEFT JOIN FILM_LIKE FL on F.FILM_ID = FL.FILM_ID " +
+                "INNER JOIN ( " +
+                    "SELECT FILM_ID " +
+                    "FROM FILM_GENRE " +
+                    "WHERE GENRE_ID = ? " +
+                ") AS FILMS_BY_GENRE on F.FILM_ID = FILMS_BY_GENRE.FILM_ID " +
+                "WHERE EXTRACT(YEAR FROM F.RELEASE_DATE) = ? " +
+                "GROUP BY F.FILM_ID " +
+                "ORDER BY COUNT(FL.FILM_ID) DESC " +
+                "LIMIT ?";
+        return jdbcTemplate.query(sql, this::makeFilm, genreId, year, count);
+    }
+
+    @Override
+    public Collection<Film> getPopularFilmsByGenre(int count, int genreId) {
+        String sql = "SELECT F.* " +
+                "FROM FILMS F " +
+                "LEFT JOIN FILM_LIKE FL on F.FILM_ID = FL.FILM_ID " +
+                "INNER JOIN ( " +
+                    "SELECT FILM_ID " +
+                    "FROM FILM_GENRE " +
+                    "WHERE GENRE_ID = ? " +
+                ") AS FILMS_BY_GENRE on F.FILM_ID = FILMS_BY_GENRE.FILM_ID " +
+                "GROUP BY F.FILM_ID " +
+                "ORDER BY COUNT(FL.FILM_ID) DESC " +
+                "LIMIT ?";
+        return jdbcTemplate.query(sql, this::makeFilm, genreId, count);
+    }
+
+    @Override
+    public Collection<Film> getPopularFilmsByYear(int count, int year) {
+        String sql = "SELECT F.* " +
+                "FROM FILMS F " +
+                "LEFT JOIN FILM_LIKE FL on F.FILM_ID = FL.FILM_ID " +
+                "WHERE EXTRACT(YEAR FROM F.RELEASE_DATE) = ? " +
+                "GROUP BY F.FILM_ID " +
+                "ORDER BY COUNT(FL.FILM_ID) DESC " +
+                "LIMIT ?";
+        return jdbcTemplate.query(sql, this::makeFilm, year, count);
+    }
+
+    @Override
     public Collection<Film> getCommonFilms(int userId, int friendId) {
         String sql = "SELECT F.* " +
                 "FROM FILMS F " +

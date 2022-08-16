@@ -66,8 +66,21 @@ public class FilmService {
         }
     }
 
-    public Collection<Film> getPopularFilms(int count) {
-        return filmStorage.getPopularFilms(count);
+    public Collection<Film> getPopularFilms(int count, int genreId, int year) {
+        //return filmStorage.getPopularFilms(count);
+        if (genreId == -1) {
+            if (year == -1) {
+                return filmStorage.getPopularFilms(count);
+            } else {
+                return filmStorage.getPopularFilmsByYear(count, year);
+            }
+        } else {
+            if (year == -1) {
+                return filmStorage.getPopularFilmsByGenre(count, genreId);
+            } else {
+                return filmStorage.getPopularFilms(count, genreId, year);
+            }
+        }
     }
 
     public Collection<Film> getCommonFilms(int userId, int friendId) {
