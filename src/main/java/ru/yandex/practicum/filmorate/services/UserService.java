@@ -6,7 +6,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exeptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exeptions.ValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storages.FilmStorage;
 import ru.yandex.practicum.filmorate.storages.UserStorage;
 
 import java.util.Collection;
@@ -16,15 +18,16 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserStorage storage;
+    private final UserStorage userStorage;
+    private final FilmStorage filmStorage;
 
     public Collection<User> getUsers() {
-        return storage.getUsers();
+        return userStorage.getUsers();
     }
 
     public User getUser(int userId) {
         try {
-            return storage.getUser(userId);
+            return userStorage.getUser(userId);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Пользователя с ID " + userId + " не существует");
         }
@@ -34,16 +37,16 @@ public class UserService {
         if (user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
-        return storage.createUser(user);
+        return userStorage.createUser(user);
     }
 
     public User updateUser(User user) {
         try {
-            storage.getUser(user.getId());
+            userStorage.getUser(user.getId());
             if (user.getName().isBlank()) {
                 user.setName(user.getLogin());
             }
-            return storage.updateUser(user);
+            return userStorage.updateUser(user);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Пользователя с ID " + user.getId() + " не существует");
         }
@@ -51,13 +54,13 @@ public class UserService {
 
     public User addFriend(int userId, int friendId) {
         try {
-            storage.getUser(userId);
-            storage.getUser(friendId);
+            userStorage.getUser(userId);
+            userStorage.getUser(friendId);
             if (userId == friendId) {
                 log.error("Нельзя добавить в друзья самого себя");
                 throw new ValidationException("Нельзя добавить в друзья самого себя");
             }
-            return storage.addFriend(userId, friendId);
+            return userStorage.addFriend(userId, friendId);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Пользователя с ID: " + userId + " или пользователя с ID: " + friendId + " не существует");
         }
@@ -65,13 +68,13 @@ public class UserService {
 
     public User deleteFriend(int userId, int friendId) {
         try {
-            storage.getUser(userId);
-            storage.getUser(friendId);
+            userStorage.getUser(userId);
+            userStorage.getUser(friendId);
             if (userId == friendId) {
                 log.error("Нельзя добавить в друзья самого себя");
                 throw new ValidationException("Нельзя добавить в друзья самого себя");
             }
-            return storage.deleteFriend(userId, friendId);
+            return userStorage.deleteFriend(userId, friendId);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Пользователя с ID: " + userId + " или пользователя с ID: " + friendId + " не существует");
         }
@@ -79,8 +82,8 @@ public class UserService {
 
     public Collection<User> getFriends(int userId) {
         try {
-            storage.getUser(userId);
-            return storage.getFriends(userId);
+            userStorage.getUser(userId);
+            return userStorage.getFriends(userId);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Пользователя с ID " + userId + " не существует");
         }
@@ -92,9 +95,18 @@ public class UserService {
                 log.error("Нельзя посмотреть список общих друзей с самим собой");
                 throw new ValidationException("Нельзя посмотреть список общих друзей с самим собой");
             }
-            return storage.getCommonFriends(userId, otherId);
+            return userStorage.getCommonFriends(userId, otherId);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Пользователя с ID: " + userId + " или пользователя с ID: " + otherId + " не существует");
+        }
+    }
+
+    public Collection<Film> getRecommendation(int userId) {
+        try {
+            userStorage.getUser(userId);
+            return filmStorage.getRecommendation(userId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("Пользователя с ID " + userId + " не существует");
         }
     }
 }

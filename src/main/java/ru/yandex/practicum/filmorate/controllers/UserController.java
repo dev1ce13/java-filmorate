@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exeptions.ValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.services.UserService;
 
@@ -49,6 +50,14 @@ public class UserController {
     ) {
         log.info("/GET вывод общих друзей пользователей c ID: " + userId + " и " + otherId);
         return userService.getCommonFriends(userId, otherId);
+    }
+
+    @GetMapping("/{userId}/recommendations")
+    public Collection<Film> getRecommendation(
+        @PathVariable int userId
+    ) {
+        log.info("/GET вывод рекомендаций для пользователя с ID: " + userId);
+        return userService.getRecommendation(userId);
     }
 
     @PostMapping

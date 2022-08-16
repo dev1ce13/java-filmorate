@@ -197,6 +197,31 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sql, this::makeFilm, userId, friendId);
     }
 
+    @Override
+    public Collection<Film> getRecommendation(int userId) {
+        String sql = "SELECT FILMS.* " +
+                "FROM FILMS " +
+                "INNER JOIN FILM_LIKE FL on FILMS.FILM_ID = FL.FILM_ID " +
+                "WHERE FL.USER_ID = ( " +
+                "SELECT USER_ID " +
+                "FROM FILM_LIKE " +
+                "WHERE FILM_ID IN ( " +
+                "SELECT FILM_ID " +
+                "FROM FILM_LIKE " +
+                "WHERE USER_ID = ? " +
+                ") " +
+                "AND USER_ID <> ? " +
+                "GROUP BY USER_ID " +
+                "ORDER BY COUNT(FILM_ID) DESC " +
+                "LIMIT 1 " +
+                ") " +
+                "AND FL.FILM_ID NOT IN ( " +
+                "SELECT FILM_ID " +
+                "FROM FILM_LIKE " +
+                "WHERE USER_ID = ?)";
+        return jdbcTemplate.query(sql, this::makeFilm, userId, userId, userId);
+    }
+
     private Film makeFilm(ResultSet resultSet, int rowNum) throws SQLException {
         return Film.builder()
                 .id(resultSet.getInt("film_id"))
